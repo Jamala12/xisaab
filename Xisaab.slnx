@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Xisaab.Api/Xisaab.Api.csproj" />
+    <Project Path="src/Xisaab.Application/Xisaab.Application.csproj" />
+    <Project Path="src/Xisaab.Domain/Xisaab.Domain.csproj" />
+    <Project Path="src/Xisaab.Infrastructure/Xisaab.Infrastructure.csproj" />
+  </Folder>
+</Solution>
