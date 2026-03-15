@@ -20,6 +20,7 @@ public class CustomerService
             .Select(c => new CustomerDto
             {
                 Id = c.Id,
+                CustomerNumber = "CUS-" + c.CustomerNumber,
                 Name = c.Name,
                 Phone = c.Phone,
                 Email = c.Email,
@@ -45,6 +46,7 @@ public class CustomerService
         return new CustomerDto
         {
             Id = customer.Id,
+            CustomerNumber = "CUS-" + customer.CustomerNumber,
             Name = customer.Name,
             Phone = customer.Phone,
             Email = customer.Email,
@@ -59,6 +61,7 @@ public class CustomerService
             .Select(c => new CustomerDto
             {
                 Id = c.Id,
+                CustomerNumber = "CUS-" + c.CustomerNumber,
                 Name = c.Name,
                 Phone = c.Phone,
                 Email = c.Email,

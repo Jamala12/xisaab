@@ -14,4 +14,15 @@ public class AppDbContext : DbContext
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceLineItem> InvoiceLineItems => Set<InvoiceLineItem>();
     public DbSet<Payment> Payments => Set<Payment>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.CustomerNumber)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.InvoiceNumber)
+            .ValueGeneratedOnAdd();
+    }
 }

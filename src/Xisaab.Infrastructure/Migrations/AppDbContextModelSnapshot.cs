@@ -31,6 +31,12 @@ namespace Xisaab.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CustomerNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CustomerNumber"));
+
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
@@ -58,9 +64,11 @@ namespace Xisaab.Infrastructure.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("InvoiceNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("InvoiceNumber"));
 
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("timestamp with time zone");

@@ -28,6 +28,7 @@ public class CustomersController : ControllerBase
         var customer = await _customerService.CreateAsync(dto);
         return CreatedAtAction(nameof(GetAll), new { id = customer.Id }, customer);
     }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {

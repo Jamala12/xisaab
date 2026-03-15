@@ -20,6 +20,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString));
 
         services.AddScoped<CustomerService>();
+        services.AddScoped<InvoiceService>();
 
         return services;
     }

@@ -10,7 +10,7 @@ public class Invoice
     public Guid Id { get; set; }
     public Guid CustomerId { get; set; }
     public Customer Customer { get; set; } = null!;
-    public string InvoiceNumber { get; set; } = string.Empty;
+    public int InvoiceNumber { get; set; }
     public DateTime IssueDate { get; set; }
     public DateTime DueDate { get; set; }
     public InvoiceStatus Status { get; set; }
