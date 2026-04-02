@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Xisaab.Application.DTOs;
 using Xisaab.Infrastructure.Services;
 
@@ -6,6 +7,7 @@ namespace Xisaab.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CustomersController : ControllerBase
 {
     private readonly CustomerService _customerService;

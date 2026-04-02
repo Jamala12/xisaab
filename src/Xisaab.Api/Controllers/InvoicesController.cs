@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Xisaab.Application.DTOs;
 using Xisaab.Domain.Entities;
 using Xisaab.Infrastructure.Services;
@@ -7,6 +8,7 @@ namespace Xisaab.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class InvoicesController : ControllerBase
 {
     private readonly InvoiceService _invoiceService;

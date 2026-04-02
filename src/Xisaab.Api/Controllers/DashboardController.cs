@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Xisaab.Infrastructure.Services;
 
 namespace Xisaab.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class  DashboardController : ControllerBase
 {
     private readonly DashboardService _dashboardService;
