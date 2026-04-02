@@ -37,4 +37,14 @@ public class CustomersController : ControllerBase
             return NotFound();
         return Ok(customer);
     }
+
+    [HttpGet("{id}/invoices")]
+    public async Task<IActionResult> GetInvoices(Guid id)
+    {
+        var customer = await _customerService.GetByIdAsync(id);
+        if (customer == null)
+            return NotFound();
+        var invoices = await _customerService.GetAllInvoicesForCustomerAsync(id);
+        return Ok(invoices);
+    }
 }

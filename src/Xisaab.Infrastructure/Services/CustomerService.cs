@@ -70,4 +70,21 @@ public class CustomerService
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<InvoiceDto>> GetAllInvoicesForCustomerAsync(Guid customerId)
+    {
+        return await _db.Invoices.Where(i => i.CustomerId == customerId)
+                .Select(i => new InvoiceDto
+                {
+                    Id = i.Id,
+                    InvoiceNumber = "INV-" + i.InvoiceNumber,
+                    CustomerId = i.CustomerId,
+                    CustomerName = i.Customer.Name,
+                    CustomerNumber = "CUS-" + i.Customer.CustomerNumber,
+                    IssueDate = i.IssueDate,
+                    DueDate = i.DueDate,
+                    Total = i.LineItems.Sum(LineItem => LineItem.Quantity * LineItem.UnitPrice),
+                    Status = i.Status.ToString(),
+                    Notes = i.Notes
+                }).ToListAsync();
+    }
 }
