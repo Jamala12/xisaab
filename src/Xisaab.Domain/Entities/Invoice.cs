@@ -17,4 +17,9 @@ public class Invoice
     public string? Notes { get; set; }
 
     public ICollection<InvoiceLineItem> LineItems { get; set; } = new List<InvoiceLineItem>();
+    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    public decimal AmountPaid => Payments.Sum(p => p.Amount);
+    public decimal AmountDue => LineItems.Sum(l => l.Quantity * l.UnitPrice) - AmountPaid;
+    public bool IsFullyPaid => AmountDue <= 0;
 }

@@ -165,7 +165,7 @@ namespace Xisaab.Infrastructure.Migrations
             modelBuilder.Entity("Xisaab.Domain.Entities.Payment", b =>
                 {
                     b.HasOne("Xisaab.Domain.Entities.Invoice", "Invoice")
-                        .WithMany()
+                        .WithMany("Payments")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -176,6 +176,8 @@ namespace Xisaab.Infrastructure.Migrations
             modelBuilder.Entity("Xisaab.Domain.Entities.Invoice", b =>
                 {
                     b.Navigation("LineItems");
+
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

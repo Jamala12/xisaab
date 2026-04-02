@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Xisaab.Application.DTOs;
 using Xisaab.Domain.Entities;
@@ -69,8 +70,8 @@ public class InvoiceService
             Id = invoice.Id,
             InvoiceNumber = "INV-" + invoice.InvoiceNumber,
             CustomerId = invoice.CustomerId,
-            CustomerName = invoice.Customer.Name,
-            CustomerNumber = "CUS-" + invoice.Customer.CustomerNumber,
+            CustomerName = customer!.Name,
+            CustomerNumber = "CUS-" + customer.CustomerNumber,
             IssueDate = invoice.IssueDate,
             DueDate = invoice.DueDate,
             Total = invoice.LineItems.Sum(LineItem => LineItem.Quantity * LineItem.UnitPrice),
@@ -101,7 +102,25 @@ public class InvoiceService
                     Description = li.Description,
                     Quantity = li.Quantity,
                     UnitPrice = li.UnitPrice
+                }).ToList(),
+                Payments = i.Payments.Select(p => new InvoicePaymentDto
+                {
+                    Id = p.Id,
+                    Amount = p.Amount,
+                    PaymentDate = p.PaidAt,
+                    PaymentMethod = p.PaymentMethod.ToString(),
+                    Notes = p.Notes
                 }).ToList()
             }).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> UpdateStatusAsync(Guid id, string status)
+    {
+        var invoice = await _db.Invoices.FindAsync(id);
+        if (invoice == null) return false;
+        InvoiceStatus newStatus = Enum.Parse<InvoiceStatus>(status);
+        invoice.Status = newStatus;
+        await _db.SaveChangesAsync();
+        return true;
     }
 }

@@ -16,4 +16,5 @@ public class InvoiceDetailDto
     public string Status { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public ICollection<InvoiceLineItemDto> LineItems { get; set; } = new List<InvoiceLineItemDto>();
+    public ICollection<InvoicePaymentDto> Payments { get; set; } = new List<InvoicePaymentDto>();
 }

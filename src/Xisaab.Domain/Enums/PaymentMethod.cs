@@ -8,5 +8,6 @@ public enum PaymentMethod
 {
     Cash,
     BankTransfer,
-    Cheque
+    Cheque,
+    Zaad
 }

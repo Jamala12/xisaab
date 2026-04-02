@@ -38,4 +38,13 @@ public class InvoicesController : ControllerBase
             return NotFound();
         return Ok(invoice);
     }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateInvoiceStatusDto dto)
+    {
+        var success = await _invoiceService.UpdateStatusAsync(id, dto.Status);
+        if (!success)
+            return NotFound();
+        return NoContent();
+    }
 }
