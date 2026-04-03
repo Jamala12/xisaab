@@ -31,7 +31,8 @@ public class AuthServices
         var claims = new[]
         {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email)
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim("BusinessId", user.BusinessId.ToString())
     };
 
         var token = new JwtSecurityToken(
@@ -51,10 +52,23 @@ public class AuthServices
         {
             throw new Exception("Email already exists");
         }
+        var newBusiness = new Business
+        {
+            Id = Guid.NewGuid(),
+            Name = dto.BusinessName,
+            Email = dto.Email,
+            CreatedAt = DateTime.UtcNow,
+            Tier = BusinessTier.Free
+        };
+
+        await _db.Businesses.AddAsync(newBusiness);
+        await _db.SaveChangesAsync();
+
         var passwordHasher = new PasswordHasher<User>();
         var user = new User
         {
             Id = Guid.NewGuid(),
+            BusinessId = newBusiness.Id,
             Email = dto.Email,
             PasswordHash = passwordHasher.HashPassword(new User(), dto.Password),
             CreatedAt = DateTime.UtcNow

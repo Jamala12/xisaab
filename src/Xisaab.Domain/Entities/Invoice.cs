@@ -15,6 +15,8 @@ public class Invoice
     public DateTime DueDate { get; set; }
     public InvoiceStatus Status { get; set; }
     public string? Notes { get; set; }
+    public Guid BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
 
     public ICollection<InvoiceLineItem> LineItems { get; set; } = new List<InvoiceLineItem>();
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();

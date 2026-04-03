@@ -12,4 +12,6 @@ public class Customer
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public DateTime CreatedAt { get; set; }
+    public Guid BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
 }

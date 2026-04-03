@@ -10,4 +10,6 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public Guid BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
 }

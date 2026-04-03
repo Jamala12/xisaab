@@ -25,6 +25,7 @@ public class PaymentService
         {
             Id = p.Id,
             InvoiceId = p.InvoiceId,
+            PaymentNumber = "PAY-" + p.PaymentNumber,
             InvoiceNumber = "INV-" + p.Invoice.InvoiceNumber,
             CustomerName = p.Invoice.Customer.Name,
             CustomerNumber = "CUS-" + p.Invoice.Customer.CustomerNumber,
@@ -66,6 +67,7 @@ public class PaymentService
         {
             Id = payment.Id,
             InvoiceId = payment.InvoiceId,
+            PaymentNumber = "PAY-" + payment.PaymentNumber,
             InvoiceNumber = "INV-" + invoice!.InvoiceNumber,
             CustomerName = invoice.Customer.Name,
             CustomerNumber = "CUS-" + invoice.Customer.CustomerNumber,
@@ -82,6 +84,7 @@ public class PaymentService
         {
             Id = p.Id,
             InvoiceId = p.InvoiceId,
+            PaymentNumber = "PAY-" + p.PaymentNumber,
             InvoiceNumber = "INV-" + p.Invoice.InvoiceNumber,
             CustomerName = p.Invoice.Customer.Name,
             CustomerNumber = "CUS-" + p.Invoice.Customer.CustomerNumber,

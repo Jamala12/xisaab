@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<InvoiceLineItem> InvoiceLineItems => Set<InvoiceLineItem>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<Business> Businesses => Set<Business>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +25,14 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Invoice>()
             .Property(i => i.InvoiceNumber)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<Business>()
+            .Property(b => b.BusinessNumber)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<Payment>()
+            .Property (p => p.PaymentNumber)
             .ValueGeneratedOnAdd();
     }
 }

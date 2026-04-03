@@ -106,6 +106,7 @@ public class InvoiceService
                 Payments = i.Payments.Select(p => new InvoicePaymentDto
                 {
                     Id = p.Id,
+                    PaymentNumber = "PAY-" + p.PaymentNumber,
                     Amount = p.Amount,
                     PaymentDate = p.PaidAt,
                     PaymentMethod = p.PaymentMethod.ToString(),
