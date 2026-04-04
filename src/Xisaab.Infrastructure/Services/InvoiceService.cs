@@ -14,27 +14,30 @@ namespace Xisaab.Infrastructure.Services;
 public class InvoiceService
 {
     private readonly AppDbContext _db;
-
-    public InvoiceService(AppDbContext db)
+    private readonly CurrentUserService _currentUser;
+    public InvoiceService(AppDbContext db, CurrentUserService currentUser)
     {
         _db = db;
+        _currentUser = currentUser;
     }
 
     public async Task<List<InvoiceDto>> GetAllAsync()
     {
-        return await _db.Invoices.Select(i => new InvoiceDto
-        {
-            Id = i.Id,
-            InvoiceNumber = "INV-" + i.InvoiceNumber,
-            CustomerId = i.CustomerId,
-            CustomerName = i.Customer.Name,
-            CustomerNumber = "CUS-" + i.Customer.CustomerNumber,
-            IssueDate = i.IssueDate,
-            DueDate = i.DueDate,
-            Total = i.LineItems.Sum(LineItem => LineItem.Quantity * LineItem.UnitPrice),
-            Status = i.Status.ToString(),
-            Notes = i.Notes
-        }).ToListAsync();
+        return await _db.Invoices
+            .Where(i => i.BusinessId == _currentUser.BusinessId)
+            .Select(i => new InvoiceDto
+            {
+                Id = i.Id,
+                InvoiceNumber = "INV-" + i.InvoiceNumber,
+                CustomerId = i.CustomerId,
+                CustomerName = i.Customer.Name,
+                CustomerNumber = "CUS-" + i.Customer.CustomerNumber,
+                IssueDate = i.IssueDate,
+                DueDate = i.DueDate,
+                Total = i.LineItems.Sum(LineItem => LineItem.Quantity * LineItem.UnitPrice),
+                Status = i.Status.ToString(),
+                Notes = i.Notes
+            }).ToListAsync();
     }
 
     public async Task<InvoiceDto> CreateAsync(CreateInvoiceDto dto)
@@ -42,6 +45,7 @@ public class InvoiceService
         var invoice = new Invoice
         {
             Id = Guid.NewGuid(),
+            BusinessId = _currentUser.BusinessId,
             CustomerId = dto.CustomerId,
             IssueDate = DateTime.UtcNow,
             DueDate = dto.DueDate,
@@ -83,7 +87,7 @@ public class InvoiceService
     public async Task<InvoiceDetailDto?> GetByIdAsync(Guid id)
     {
         return await _db.Invoices
-            .Where(i => i.Id == id)
+            .Where(i => i.Id == id && i.BusinessId == _currentUser.BusinessId)
             .Select(i => new InvoiceDetailDto
             {
                 Id = i.Id,
@@ -117,7 +121,8 @@ public class InvoiceService
 
     public async Task<bool> UpdateStatusAsync(Guid id, string status)
     {
-        var invoice = await _db.Invoices.FindAsync(id);
+        var invoice = await _db.Invoices
+            .FirstOrDefaultAsync(i => i.Id == id && i.BusinessId == _currentUser.BusinessId);
         if (invoice == null) return false;
         InvoiceStatus newStatus = Enum.Parse<InvoiceStatus>(status);
         invoice.Status = newStatus;

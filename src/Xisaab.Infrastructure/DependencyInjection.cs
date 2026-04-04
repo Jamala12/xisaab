@@ -26,6 +26,8 @@ public static class DependencyInjection
         services.AddScoped<PaymentService>();
         services.AddScoped<DashboardService>();
         services.AddScoped<AuthServices>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<CurrentUserService>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

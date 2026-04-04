@@ -13,27 +13,30 @@ namespace Xisaab.Infrastructure.Services;
 public class PaymentService
 {
     private readonly AppDbContext _db;
-
-    public PaymentService(AppDbContext db)
+    private readonly CurrentUserService _currentUser;
+    public PaymentService(AppDbContext db, CurrentUserService currentUser)
     {
         _db = db;
+        _currentUser = currentUser;
     }
 
     public async Task<List<PaymentDto>> GetAllAsync()
     {
-        return await _db.Payments.Select(p => new PaymentDto
-        {
-            Id = p.Id,
-            InvoiceId = p.InvoiceId,
-            PaymentNumber = "PAY-" + p.PaymentNumber,
-            InvoiceNumber = "INV-" + p.Invoice.InvoiceNumber,
-            CustomerName = p.Invoice.Customer.Name,
-            CustomerNumber = "CUS-" + p.Invoice.Customer.CustomerNumber,
-            Amount = p.Amount,
-            PaymentDate = p.PaidAt,
-            PaymentMethod = p.PaymentMethod.ToString(),
-            Notes = p.Notes,
-        }).ToListAsync();
+        return await _db.Payments
+            .Where(p => p.BusinessId == _currentUser.BusinessId)
+            .Select(p => new PaymentDto
+            {
+                Id = p.Id,
+                InvoiceId = p.InvoiceId,
+                PaymentNumber = "PAY-" + p.PaymentNumber,
+                InvoiceNumber = "INV-" + p.Invoice.InvoiceNumber,
+                CustomerName = p.Invoice.Customer.Name,
+                CustomerNumber = "CUS-" + p.Invoice.Customer.CustomerNumber,
+                Amount = p.Amount,
+                PaymentDate = p.PaidAt,
+                PaymentMethod = p.PaymentMethod.ToString(),
+                Notes = p.Notes,
+            }).ToListAsync();
     }
 
     public async Task<PaymentDto> CreateAsync(CreatePaymentDto dto)
@@ -41,6 +44,7 @@ public class PaymentService
         var payment = new Payment
         {
             Id = Guid.NewGuid(),
+            BusinessId = _currentUser.BusinessId,
             InvoiceId = dto.InvoiceId,
             Amount = dto.Amount,
             PaidAt = dto.PaymentDate,
@@ -55,7 +59,7 @@ public class PaymentService
             .Include(i => i.Customer)
             .Include(i => i.LineItems)
             .Include(i => i.Payments)
-            .FirstOrDefaultAsync(i => i.Id == payment.InvoiceId);
+            .FirstOrDefaultAsync(i => i.Id == payment.InvoiceId && i.BusinessId == _currentUser.BusinessId);
 
         if (invoice!.IsFullyPaid)
         {
@@ -80,18 +84,20 @@ public class PaymentService
 
     public async Task<PaymentDto?> GetByIdAsync(Guid id)
     {
-        return await _db.Payments.Where(p => p.Id == id).Select(p => new PaymentDto
-        {
-            Id = p.Id,
-            InvoiceId = p.InvoiceId,
-            PaymentNumber = "PAY-" + p.PaymentNumber,
-            InvoiceNumber = "INV-" + p.Invoice.InvoiceNumber,
-            CustomerName = p.Invoice.Customer.Name,
-            CustomerNumber = "CUS-" + p.Invoice.Customer.CustomerNumber,
-            Amount = p.Amount,
-            PaymentDate = p.PaidAt,
-            PaymentMethod = p.PaymentMethod.ToString(),
-            Notes = p.Notes,
-        }).FirstOrDefaultAsync();
+        return await _db.Payments
+            .Where(p => p.BusinessId == _currentUser.BusinessId)
+            .Where(p => p.Id == id).Select(p => new PaymentDto
+            {
+                Id = p.Id,
+                InvoiceId = p.InvoiceId,
+                PaymentNumber = "PAY-" + p.PaymentNumber,
+                InvoiceNumber = "INV-" + p.Invoice.InvoiceNumber,
+                CustomerName = p.Invoice.Customer.Name,
+                CustomerNumber = "CUS-" + p.Invoice.Customer.CustomerNumber,
+                Amount = p.Amount,
+                PaymentDate = p.PaidAt,
+                PaymentMethod = p.PaymentMethod.ToString(),
+                Notes = p.Notes,
+            }).FirstOrDefaultAsync();
     }
 }

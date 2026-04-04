@@ -11,27 +11,40 @@ namespace Xisaab.Infrastructure.Services;
 public class DashboardService
 {
     private readonly AppDbContext _db;
-    public DashboardService(AppDbContext db)
+    private readonly CurrentUserService _currentUser;
+    public DashboardService(AppDbContext db, CurrentUserService currentUser)
     {
         _db = db;
+        _currentUser = currentUser;
     }
     public async Task<DashboardDto> GetDashboardAsync()
     {
         var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
 
-        var totalCustomers = await _db.Customers.CountAsync();
-        var totalInvoices = await _db.Invoices.CountAsync(i => i.IssueDate >= thirtyDaysAgo);
-        var totalDraft = await _db.Invoices.CountAsync(i => i.Status == InvoiceStatus.Draft);
-        var totalSent = await _db.Invoices.CountAsync(i => i.Status == InvoiceStatus.Sent);
-        var totalOverdue = await _db.Invoices.CountAsync(i => i.Status == InvoiceStatus.Overdue);
+        var totalCustomers = await _db.Customers
+            .Where(d => d.BusinessId == _currentUser.BusinessId)
+            .CountAsync();
+        var totalInvoices = await _db.Invoices
+            .Where(d => d.BusinessId == _currentUser.BusinessId)
+            .CountAsync(i => i.IssueDate >= thirtyDaysAgo);
+        var totalDraft = await _db.Invoices
+            .Where(d => d.BusinessId == _currentUser.BusinessId)
+            .CountAsync(i => i.Status == InvoiceStatus.Draft);
+        var totalSent = await _db.Invoices
+            .Where(d => d.BusinessId == _currentUser.BusinessId)
+            .CountAsync(i => i.Status == InvoiceStatus.Sent);
+        var totalOverdue = await _db.Invoices
+            .Where(d => d.BusinessId == _currentUser.BusinessId)
+            .CountAsync(i => i.Status == InvoiceStatus.Overdue);
         var totalAmountPaid = await _db.Payments
-            .Where(p => p.PaidAt >= thirtyDaysAgo)
+            .Where(p => p.PaidAt >= thirtyDaysAgo && p.BusinessId == _currentUser.BusinessId)
             .SumAsync(p => p.Amount);
         var totalAmountOverdue = await _db.Invoices
-            .Where(i => i.Status == InvoiceStatus.Overdue)
+            .Where(i => i.Status == InvoiceStatus.Overdue && i.BusinessId == _currentUser.BusinessId)
             .SelectMany(i => i.LineItems)
             .SumAsync(l => l.Quantity * l.UnitPrice);
         var recentInvoices = await _db.Invoices
+            .Where(i => i.BusinessId == _currentUser.BusinessId)
             .OrderByDescending(i => i.IssueDate)
             .Take(5)
             .Select(i => new InvoiceDto
