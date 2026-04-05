@@ -12,6 +12,7 @@ import NewCustomerPage from './pages/NewCustomerPage'
 import DetailedInvoicePage from './pages/DetailedInvoicePage'
 import NewInvoicePage from './pages/NewInvoicePage'
 import RecordPaymentPage from './pages/RecordPaymentPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 
 function App() {
@@ -22,58 +23,77 @@ function App() {
             <Route path="/dashboard" element={
                 <ProtectedRoute>
                     <Navbar/>
-                    <DashboardPage/>
+                    <main className="ml-56 p-8 min-h-screen bg-background">
+                      <DashboardPage/>
+                    </main>
                 </ProtectedRoute>
             } />
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/customers" element={
                 <ProtectedRoute>
                     <Navbar/>
-                    <CustomersPage/>
+                    <main className="ml-56 p-8 min-h-screen bg-background">
+                      <CustomersPage/>
+                    </main>
                 </ProtectedRoute>
             } />
             <Route path="/invoices" element={
                 <ProtectedRoute>
                     <Navbar/>
-                    <InvoicesPage/>
+                    <main className="ml-56 p-8 min-h-screen bg-background">
+                      <InvoicesPage/>
+                    </main>
                 </ProtectedRoute>
             } />
             <Route path="/payments" element={
                   <ProtectedRoute>
                       <Navbar/>
-                      <PaymentsPage/>
+                      <main className="ml-56 p-8 min-h-screen bg-background">
+                        <PaymentsPage/>
+                      </main>
                   </ProtectedRoute>
             } />
             <Route path="/customers/new" element={
                 <ProtectedRoute>
                     <Navbar/>
-                    <NewCustomerPage/>
+                    <main className="ml-56 p-8 min-h-screen bg-background">
+                      <NewCustomerPage/>
+                    </main>
                 </ProtectedRoute>
             } />
             <Route path="/customers/:id" element={
                 <ProtectedRoute>
                     <Navbar/>
-                    <DetailedCustomerPage/>
+                    <main className="ml-56 p-8 min-h-screen bg-background">
+                      <DetailedCustomerPage/>
+                    </main>
                 </ProtectedRoute>
             } />
             <Route path="/invoices/new" element={
                 <ProtectedRoute>
                     <Navbar/>
-                    <NewInvoicePage/>
+                    <main className="ml-56 p-8 min-h-screen bg-background">
+                      <NewInvoicePage/>
+                    </main>
                 </ProtectedRoute>
             } />
             <Route path="/invoices/:id/payment" element={
                 <ProtectedRoute>
                     <Navbar />
-                    <RecordPaymentPage />
+                    <main className="ml-56 p-8 min-h-screen bg-background">
+                      <RecordPaymentPage />
+                    </main>
                 </ProtectedRoute>
             } />
             <Route path="/invoices/:id" element={
                 <ProtectedRoute>
                     <Navbar/>
-                    <DetailedInvoicePage/>
+                    <main className="ml-56 p-8 min-h-screen bg-background">  
+                      <DetailedInvoicePage/>
+                    </main>
                 </ProtectedRoute>
             } />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     )
 }
