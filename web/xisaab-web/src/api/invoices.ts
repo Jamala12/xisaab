@@ -24,3 +24,16 @@ export const createInvoice = async (data: {
 export const updateInvoiceStatus = async (id: string, status: string): Promise<void> => {
     await client.patch(`/invoices/${id}/status`, { status })
 }
+
+export const updateInvoice = async (id: string, data: {
+    issueDate: string,
+    dueDate: string,
+    notes?: string,
+    items: { description: string, quantity: number, unitPrice: number }[]
+}): Promise<void> => {
+    await client.put(`/invoices/${id}`, data)
+}
+
+export const deleteInvoice = async (id: string): Promise<void> => {
+    await client.delete(`/invoices/${id}`)
+}

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Xisaab.Application.DTOs;
 using Xisaab.Domain.Entities;
+using Xisaab.Domain.Enums;
 using Xisaab.Infrastructure.Services;
 
 namespace Xisaab.Api.Controllers;
@@ -45,8 +46,36 @@ public class InvoicesController : ControllerBase
     public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateInvoiceStatusDto dto)
     {
         var success = await _invoiceService.UpdateStatusAsync(id, dto.Status);
-        if (!success)
+        if (success == ServiceResult.NotFound)
             return NotFound();
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateInvoiceDto dto)
+    {
+        var update = await _invoiceService.UpdateInvoiceAsync(id, dto);
+        switch (update)
+        {
+            case ServiceResult.NotFound:
+                return NotFound();
+            case ServiceResult.Blocked:
+                return BadRequest("Invoice has recorded payments and cannot be edited.");
+        }
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var deleted = await _invoiceService.DeleteAsync(id);
+        switch (deleted)
+        {
+            case ServiceResult.NotFound:
+                return NotFound();
+            case ServiceResult.Blocked:
+                return BadRequest("Invoice has recorded payments and cannot be deleted.");
+        }
         return NoContent();
     }
 }

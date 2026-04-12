@@ -100,4 +100,24 @@ public class PaymentService
                 Notes = p.Notes,
             }).FirstOrDefaultAsync();
     }
+
+    public async Task<ServiceResult> DeleteAsync(Guid id)
+    {
+        var payment = await _db.Payments
+            .FirstOrDefaultAsync(p => p.Id == id && p.BusinessId == _currentUser.BusinessId);
+        if (payment == null) return ServiceResult.NotFound;
+        _db.Payments.Remove(payment);
+        await _db.SaveChangesAsync();
+        var invoice = await _db.Invoices
+            .Include(i => i.Customer)
+            .Include(i => i.LineItems)
+            .Include(i => i.Payments)
+            .FirstOrDefaultAsync(i => i.Id == payment.InvoiceId && i.BusinessId == _currentUser.BusinessId);
+        if (invoice!.Status == InvoiceStatus.Paid && !invoice.IsFullyPaid)
+        {
+            invoice.Status = InvoiceStatus.Draft;
+            await _db.SaveChangesAsync();
+        }
+        return ServiceResult.Success;
+    }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Xisaab.Application.DTOs;
 using Xisaab.Infrastructure.Services;
+using Xisaab.Domain.Enums;
 
 namespace Xisaab.Api.Controllers;
 
@@ -48,5 +49,28 @@ public class CustomersController : ControllerBase
             return NotFound();
         var invoices = await _customerService.GetAllInvoicesForCustomerAsync(id);
         return Ok(invoices);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerDto dto)
+    {
+        var updated = await _customerService.UpdateAsync(id, dto);
+        if (updated == ServiceResult.NotFound)
+            return NotFound();
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var deleted = await _customerService.DeleteAsync(id);
+        switch (deleted)
+        {
+            case ServiceResult.NotFound:
+                return NotFound();
+            case ServiceResult.Blocked:
+                return BadRequest("Customer has recorded invoices and cannot be deleted.");
+        }
+        return NoContent();
     }
 }

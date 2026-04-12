@@ -16,3 +16,7 @@ export const createPayment = async (data: {
     const response = await client.post('/payments', data)
     return response.data
 }
+
+export const deletePayment = async (id: string): Promise<void> => {
+    await client.delete(`/payments/${id}`)
+}

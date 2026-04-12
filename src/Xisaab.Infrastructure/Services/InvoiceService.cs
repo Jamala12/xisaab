@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
@@ -119,14 +120,59 @@ public class InvoiceService
             }).FirstOrDefaultAsync();
     }
 
-    public async Task<bool> UpdateStatusAsync(Guid id, string status)
+    public async Task<ServiceResult> UpdateStatusAsync(Guid id, string status)
     {
         var invoice = await _db.Invoices
             .FirstOrDefaultAsync(i => i.Id == id && i.BusinessId == _currentUser.BusinessId);
-        if (invoice == null) return false;
+        if (invoice == null) return ServiceResult.NotFound;
         InvoiceStatus newStatus = Enum.Parse<InvoiceStatus>(status);
         invoice.Status = newStatus;
         await _db.SaveChangesAsync();
-        return true;
+        return ServiceResult.Success;
+    }
+
+    public async Task<ServiceResult> UpdateInvoiceAsync(Guid id, UpdateInvoiceDto dto)
+    {
+        var invoice = await _db.Invoices
+            .Include(i => i.LineItems)
+            .FirstOrDefaultAsync(i => i.Id == id && i.BusinessId == _currentUser.BusinessId);
+        if (invoice == null) return ServiceResult.NotFound;
+
+        var hasPayments = await _db.Payments.AnyAsync(p => p.InvoiceId == id);
+        if (hasPayments)
+            return ServiceResult.Blocked;
+
+        invoice.IssueDate = dto.IssueDate;
+        invoice.DueDate = dto.DueDate;
+        invoice.Notes = dto.Notes;
+
+        invoice.LineItems.Clear();
+        foreach (var item in dto.Items)
+        {
+            invoice.LineItems.Add(new InvoiceLineItem
+            {
+                Id = Guid.NewGuid(),
+                InvoiceId = id,
+                Description = item.description,
+                Quantity = item.quantity,
+                UnitPrice = item.unitPrice,
+            });
+        }
+        await _db.SaveChangesAsync();
+        return ServiceResult.Success;
+    }
+        
+    public async Task<ServiceResult> DeleteAsync(Guid id)
+    {
+        var invoice = await _db.Invoices
+            .Include(i => i.LineItems)
+            .FirstOrDefaultAsync(i => i.Id == id && i.BusinessId == _currentUser.BusinessId);
+        if (invoice == null) return ServiceResult.NotFound;
+        var hasPayments = await _db.Payments.AnyAsync(p => p.InvoiceId == id);
+        if (hasPayments)
+            return ServiceResult.Blocked;
+        _db.Invoices.Remove(invoice);
+        await _db.SaveChangesAsync();
+        return ServiceResult.Success;
     }
 }

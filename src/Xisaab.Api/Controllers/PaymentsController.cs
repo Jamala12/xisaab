@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Xisaab.Application.DTOs;
 using Xisaab.Domain.Entities;
 using Xisaab.Infrastructure.Services;
+using Xisaab.Domain.Enums;
 
 namespace Xisaab.Api.Controllers;
 
@@ -35,5 +36,14 @@ public class PaymentsController : ControllerBase
         if (payment == null)
             return NotFound();
         return Ok(payment);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var deleted = await _paymentService.DeleteAsync(id);
+        if (deleted == ServiceResult.NotFound)
+            return NotFound();
+        return NoContent();
     }
 }
